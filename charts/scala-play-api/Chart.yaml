@@ -1,0 +1,8 @@
+name: scala-play-api
+version: 1.0.0
+description: Scala rest api using play framework
+keywords:
+  - scala-play-api
+maintainers:
+  - name: cvanwyk
+    email: charles.vanWyk@takealot.com

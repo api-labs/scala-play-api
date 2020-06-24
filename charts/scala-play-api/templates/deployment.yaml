@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+{{ $chart := .Chart }}
+{{ $values := .Values }}
+metadata:
+  name: {{ $chart.Name }}
+  labels:
+    app: {{ $chart.Name | quote }}
+    environment: {{ $values.labels.environment | quote }}
+    framework: {{ $values.labels.framework | quote }}
+    instance: {{ $values.labels.instance | quote }}
+    repo: {{ $values.labels.repo | quote }}
+    task: {{ $values.labels.task | quote }}
+    team: {{ (index $chart.Maintainers 0).Name }}
+    version: {{ $chart.Version | quote }}
+spec:
+  replicas: {{ default "1" $values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $chart.Name | quote }}
+      instance: {{ $values.labels.instance | quote }}
+      task: {{ $values.labels.task | quote }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: {{ $values.strategy.maxUnavailable }}
+      maxSurge: {{ $values.strategy.maxSurge }}
+  template:
+    metadata:
+      labels:
+        app: {{ $chart.Name | quote }}
+        environment: {{ $values.labels.environment | quote }}
+        framework: {{ $values.labels.framework | quote }}
+        instance: {{ $values.labels.instance | quote }}
+        repo: {{ $values.labels.repo | quote }}
+        task: {{ $values.labels.task | quote }}
+        team: {{ (index $chart.Maintainers 0).Name }}
+        version: {{ $chart.Version | quote }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: {{ $chart.Name }}
+          image: "scala-play-api:{{ $values.image.tag }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          ports:
+            - containerPort: 9000
+          resources:
+            limits:
+              memory: {{ $values.resources.limits.memory }}
+            requests:
+              cpu: {{ $values.resources.requests.cpu }}
