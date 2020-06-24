@@ -1,0 +1,28 @@
+kind: Service
+apiVersion: v1
+{{ $chart := .Chart }}
+{{ $labels := .Values.labels }}
+metadata:
+  name: {{ $chart.Name }}
+  labels:
+    app: {{ $chart.Name | quote }}
+    environment: {{ $labels.environment | quote }}
+    framework: {{ $labels.framework | quote }}
+    instance: {{ $labels.instance | quote }}
+    repo: {{ $labels.repo | quote }}
+    task: {{ $labels.task | quote }}
+    team: {{ (index $chart.Maintainers 0).Name }}
+    version: {{ $chart.Version | quote }}
+  annotations:
+    cloud.google.com/load-balancer-type: Internal
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    app: {{ $chart.Name }}
+
